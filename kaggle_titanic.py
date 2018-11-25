@@ -1,5 +1,4 @@
 import pandas as pd
-
 #Importar os dados de treino e de teste
 base_treinamento = pd.read_csv('train.csv')
 #base_teste = pd.read_csv('test.csv')
@@ -26,64 +25,77 @@ new_base_treinamento['Age'].fillna(new_base_treinamento['Age'].mean(), inplace=T
 previsores = new_base_treinamento.drop('Survived', axis=1)
 classe = new_base_treinamento['Survived']
 
+previsores = pd.get_dummies(previsores)
+
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+previsores = scaler.fit_transform(previsores)
+
 #Fazer a divisão entre dados de treino e teste
 from sklearn.model_selection import train_test_split
 
 previsores_treinamento, previsores_teste, classe_treinamento, classe_teste = train_test_split(previsores, classe, test_size=0.15, random_state=0)
 
 #Naive Bayes: 79,85%
-#from sklearn.naive_bayes import GaussianNB
-#classificador = GaussianNB()
-#classificador.fit(previsores_treinamento, classe_treinamento)
-#previsoes = classificador.predict(previsores_teste)
+from sklearn.naive_bayes import GaussianNB
+classificador = GaussianNB()
+classificador.fit(previsores_treinamento, classe_treinamento)
+previsoes_naive_bayes = classificador.predict(previsores_teste)
 
 #Árvore de Decisão: 82,09%
-#from sklearn.tree import DecisionTreeClassifier
+from sklearn.tree import DecisionTreeClassifier
 
-#classificador = DecisionTreeClassifier(criterion='gini', max_depth=3, random_state=0)
-#classificador.fit(previsores_treinamento, classe_treinamento)
-#previsoes = classificador.predict(previsores_teste)
+classificador = DecisionTreeClassifier(criterion='gini', max_depth=3, random_state=0)
+classificador.fit(previsores_treinamento, classe_treinamento)
+previsoes_decision_tree = classificador.predict(previsores_teste)
 
 #Random Forest: 86,57%
-#from sklearn.ensemble import RandomForestClassifier
-#classificador = RandomForestClassifier(n_estimators=100, criterion='entropy', random_state=0)
-#classificador.fit(previsores_treinamento, classe_treinamento)
-#previsoes = classificador.predict(previsores_teste)
+from sklearn.ensemble import RandomForestClassifier
+classificador = RandomForestClassifier(n_estimators=100, criterion='entropy', random_state=0)
+classificador.fit(previsores_treinamento, classe_treinamento)
+previsoes_random_forest = classificador.predict(previsores_teste)
 
 #kNN: 64,92%
-#from sklearn.neighbors import KNeighborsClassifier
-#classificador = KNeighborsClassifier(n_neighbors=5, metric='minkowski', p=2)
-#classificador.fit(previsores_treinamento, classe_treinamento)
-#previsoes = classificador.predict(previsores_teste)
+from sklearn.neighbors import KNeighborsClassifier
+classificador = KNeighborsClassifier(n_neighbors=5, metric='minkowski', p=2)
+classificador.fit(previsores_treinamento, classe_treinamento)
+previsoes_knn = classificador.predict(previsores_teste)
 
 #Regressão Logística: 79,85%
-#from sklearn.linear_model import LogisticRegression
-#classificador = LogisticRegression()
-#classificador.fit(previsores_treinamento, classe_treinamento)
-#previsoes = classificador.predict(previsores_teste)
+from sklearn.linear_model import LogisticRegression
+classificador = LogisticRegression()
+classificador.fit(previsores_treinamento, classe_treinamento)
+previsoes_logistic_regression = classificador.predict(previsores_teste)
 
 #SVM: 77,61%
-#from sklearn.svm import SVC
-#classificador = SVC(kernel = 'linear', random_state = 1)
-#classificador.fit(previsores_treinamento, classe_treinamento)
-#previsoes = classificador.predict(previsores_teste)
+from sklearn.svm import SVC
+classificador = SVC(kernel = 'linear', random_state = 1)
+classificador.fit(previsores_treinamento, classe_treinamento)
+previsoes_svm = classificador.predict(previsores_teste)
 
 #AdaBoost: 81,34%
-#from sklearn.ensemble import AdaBoostClassifier
-#classificador = AdaBoostClassifier(n_estimators=200,random_state=0)
-#classificador.fit(previsores_treinamento, classe_treinamento)
-#previsoes = classificador.predict(previsores_teste)
+from sklearn.ensemble import AdaBoostClassifier
+classificador = AdaBoostClassifier(n_estimators=200,random_state=0)
+classificador.fit(previsores_treinamento, classe_treinamento)
+previsoes_adaboost = classificador.predict(previsores_teste)
 
 #GBM: 83,52%
 from sklearn.ensemble import GradientBoostingClassifier
 classificador = GradientBoostingClassifier(n_estimators=100, criterion='friedman_mse', random_state=0)
     #(n_estimators=100, criterion='entropy', random_state=0)
 classificador.fit(previsores_treinamento, classe_treinamento)
-previsoes = classificador.predict(previsores_teste)
+previsoes_gbm = classificador.predict(previsores_teste)
 
 from sklearn.metrics import confusion_matrix, accuracy_score
-precisao = accuracy_score(classe_teste, previsoes)
-matriz = confusion_matrix(classe_teste, previsoes)
+precisao_naive_bayes = accuracy_score(classe_teste, previsoes_naive_bayes)
+precisao_decision_tree = accuracy_score(classe_teste, previsoes_decision_tree)
+precisao_random_forest = accuracy_score(classe_teste, previsoes_random_forest)
+precisao_knn = accuracy_score(classe_teste, previsoes_knn)
+precisao_logistic_regression = accuracy_score(classe_teste, previsoes_logistic_regression)
+precisao_svm = accuracy_score(classe_teste, previsoes_svm)
+precisao_adaboost = accuracy_score(classe_teste, previsoes_adaboost)
+precisao_gbm = accuracy_score(classe_teste, previsoes_gbm)
+#matriz = confusion_matrix(classe_teste, previsoes)
 
 print('Fim')
 
